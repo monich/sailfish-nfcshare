@@ -1,0 +1,9 @@
+NFC share plugin for Sailfish OS
+================================
+
+Shares text as an NDEF record by emulating a Type 4A NFC tag.
+What looks like a URL gets transformed into a URI record and
+everything else becomes a Text record.
+
+NFCForum-TS-Type-4-Tag specification limits the size of an
+NDEF record shared this way by 0xfffc bytes.
