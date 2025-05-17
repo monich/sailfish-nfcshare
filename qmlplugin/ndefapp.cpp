@@ -38,6 +38,7 @@
 
 #include "ndefapp.h"
 
+#include <QtCore/QBitArray>
 #include <QtCore/QByteArray>
 #include <QtCore/QDebug>
 #include <QtCore/QMap>
@@ -180,36 +181,39 @@ public:
     File(QString, const QByteArray&, const QByteArray&);
 
     bool isValid() const;
-    bool isShared() const;
+    bool isFullyRead() const;
     uint size() const;
-    uint maxPos() const;
+    uint bytesRead() const;
     void reset();
     void confirmRead();
     QString name() const;
     QByteArray read(uint, uint);
 
 private:
-    uint iMaxPos;
-    uint iMaxConfirmedPos;
     QString iName;
     QByteArray iFid;
     QByteArray iData;
+    QBitArray iBytesRead;   // One bit per byte in iData
+    int iLastReadStart;     // Inclusive
+    int iLastReadEnd;       // Exclusive
 };
 
 NdefApp::File::File(
     QString aName,
     const QByteArray& aFid,
     const QByteArray& aData) :
-    iMaxPos(0),
-    iMaxConfirmedPos(0),
     iName(aName),
     iFid(aFid),
-    iData(aData)
-{}
+    iData(aData),
+    iBytesRead(aData.size()),
+    iLastReadStart(0),
+    iLastReadEnd(0)
+{
+}
 
 NdefApp::File::File() :
-    iMaxPos(0),
-    iMaxConfirmedPos(0)
+    iLastReadStart(0),
+    iLastReadEnd(0)
 {}
 
 bool
@@ -219,9 +223,9 @@ NdefApp::File::isValid() const
 }
 
 bool
-NdefApp::File::isShared() const
+NdefApp::File::isFullyRead() const
 {
-    return iMaxConfirmedPos > 0 && iMaxConfirmedPos >= size();
+    return bytesRead() == size();
 }
 
 QString
@@ -237,21 +241,24 @@ NdefApp::File::size() const
 }
 
 uint
-NdefApp::File::maxPos() const
+NdefApp::File::bytesRead() const
 {
-    return iMaxConfirmedPos;
+    return iBytesRead.count(true);
 }
 
 void
 NdefApp::File::reset()
 {
-    iMaxPos = iMaxConfirmedPos = 0;
+    iBytesRead.fill(false);
+    iLastReadStart = iLastReadEnd = 0;
 }
 
 void
 NdefApp::File::confirmRead()
 {
-    iMaxConfirmedPos = iMaxPos;
+    iBytesRead.fill(true, iLastReadStart, iLastReadEnd);
+    iLastReadStart = iLastReadEnd = 0;
+    DBG(bytesRead() << "bytes out of" << size());
 }
 
 QByteArray
@@ -263,7 +270,7 @@ NdefApp::File::read(
     uint len = aExpected ? aExpected : (iData.size() - off);
 
     DBG("Reading [" << off << ".." << (off + len - 1) << "] from" << iName);
-    iMaxPos = off + len;
+    iLastReadEnd = (iLastReadStart = off) + len;
     return iData.mid(off, len);
 }
 
@@ -643,7 +650,7 @@ NdefApp::Private::readBinary(
 void
 NdefApp::Private::mayBeReset()
 {
-    if (!iDone && !iNdefFile->isShared() && iNdefFile->maxPos()) {
+    if (!iDone && !iNdefFile->isFullyRead() && iNdefFile->bytesRead()) {
         iNdefFile->reset();
         Q_EMIT parentObject()->bytesTransferredChanged();
     }
@@ -652,7 +659,7 @@ NdefApp::Private::mayBeReset()
 void
 NdefApp::Private::mayBeDone()
 {
-    if (iNdefFile->isShared()) {
+    if (iNdefFile->isFullyRead()) {
         NdefApp* app = parentObject();
 
         if (!iDone) {
@@ -753,10 +760,10 @@ NdefApp::Private::ResponseStatus(
 {
     DBG("Response" << aResponseId << (aOk ? "ok" : "failed"));
     if (aOk && iLastReadId == aResponseId && iSelectedFile) {
-        const uint prev = iNdefFile->maxPos();
+        const uint prev = iNdefFile->bytesRead();
         DBG("Read" << aResponseId << "confirmed");
         iSelectedFile->confirmRead();
-        if (iNdefFile->maxPos() > prev) {
+        if (iNdefFile->bytesRead() > prev) {
             Q_EMIT parentObject()->bytesTransferredChanged();
         }
     }
@@ -795,7 +802,7 @@ NdefApp::getBytesTotal() const
 uint
 NdefApp::getBytesTransferred() const
 {
-    return iPrivate->iNdefFile->maxPos();
+    return iPrivate->iNdefFile->bytesRead();
 }
 
 #include "ndefapp.moc"
