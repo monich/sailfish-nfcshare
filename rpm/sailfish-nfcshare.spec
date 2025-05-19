@@ -3,7 +3,7 @@ Version:    1.0.0
 Release:    1
 License:    BSD
 Summary:    NFC share plugin
-URL:        https://github.com/monich/sailfish-nfcshare
+URL:        https://github.com/sailfishos/sailfish-nfcshare
 Source0:    %{name}-%{version}.tar.gz
 
 Requires: sailfishshare-components
