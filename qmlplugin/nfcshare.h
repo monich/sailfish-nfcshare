@@ -47,6 +47,7 @@ class NfcShare :
 {
     Q_OBJECT
     Q_PROPERTY(QString text READ getText WRITE setText NOTIFY textChanged)
+    Q_PROPERTY(bool tooMuchData READ isTooMuchData NOTIFY tooMuchDataChanged)
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
     Q_PROPERTY(bool done READ isDone NOTIFY doneChanged)
     Q_PROPERTY(uint bytesTotal READ getBytesTotal NOTIFY bytesTotalChanged)
@@ -59,6 +60,7 @@ public:
     QString getText() const;
     void setText(QString);
 
+    bool isTooMuchData() const;
     bool isReady() const;
     bool isDone() const;
     uint getBytesTotal() const;
@@ -66,6 +68,7 @@ public:
 
 Q_SIGNALS:
     void textChanged();
+    void tooMuchDataChanged();
     void readyChanged();
     void doneChanged();
     void bytesTotalChanged();

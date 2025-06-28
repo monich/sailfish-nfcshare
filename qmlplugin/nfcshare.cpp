@@ -102,6 +102,7 @@ NfcShare::setText(
 {
     if (iPrivate->iText != aText) {
         iPrivate->iText = aText;
+        const bool wasTooMuchData = isTooMuchData();
         const bool wasReady = isReady();
         const bool wasDone = isDone();
         const uint prevBytesTotal = getBytesTotal();
@@ -143,6 +144,9 @@ NfcShare::setText(
             }
         }
 
+        if (wasTooMuchData != isTooMuchData()) {
+            Q_EMIT tooMuchDataChanged();
+        }
         if (wasReady != isReady()) {
             Q_EMIT readyChanged();
         }
@@ -157,6 +161,12 @@ NfcShare::setText(
         }
         Q_EMIT textChanged();
     }
+}
+
+bool
+NfcShare::isTooMuchData() const
+{
+    return iPrivate->iApp && iPrivate->iApp->isTooMuchData();
 }
 
 bool

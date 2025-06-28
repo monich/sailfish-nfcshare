@@ -38,8 +38,37 @@
 
 #include "nfcshare.h"
 
-#include <QtQml/qqml.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QLocale>
+#include <QtCore/QTranslator>
+#include <QtQml/QQmlEngine>
 #include <QtQml/QQmlExtensionPlugin>
+#include <QtQml/qqml.h>
+
+// ==========================================================================
+// NfcSharePluginTranslator
+// ==========================================================================
+
+class NfcSharePluginTranslator:
+    public QTranslator
+{
+    Q_OBJECT
+public:
+    NfcSharePluginTranslator(QObject*);
+    ~NfcSharePluginTranslator() Q_DECL_OVERRIDE;
+};
+
+NfcSharePluginTranslator::NfcSharePluginTranslator(
+    QObject* aParent) :
+    QTranslator(aParent)
+{
+    qApp->installTranslator(this);
+}
+
+NfcSharePluginTranslator::~NfcSharePluginTranslator()
+{
+    qApp->removeTranslator(this);
+}
 
 // ==========================================================================
 // NfcShareQmlExtensionPlugin
@@ -57,12 +86,22 @@ public:
     void initializeEngine(QQmlEngine*, const char*) Q_DECL_OVERRIDE;
 };
 
-void NfcShareQmlExtensionPlugin::registerTypes(const char* aUri)
+void
+NfcShareQmlExtensionPlugin::registerTypes(
+    const char* aUri)
 {
     qmlRegisterType<NfcShare>(aUri, V1, V2, "NfcShare");
 }
 
-void NfcShareQmlExtensionPlugin::initializeEngine(QQmlEngine* aEngine, const char *aUri)
-{}
+void
+NfcShareQmlExtensionPlugin::initializeEngine(
+    QQmlEngine* aEngine,
+    const char*)
+{
+    const QString dir("/usr/share/translations");
+
+    (new NfcSharePluginTranslator(aEngine))->load("nfcshare_eng_en", dir);
+    (new NfcSharePluginTranslator(aEngine))->load(QLocale(), "nfcshare", "-", dir);
+}
 
 #include "plugin.moc"

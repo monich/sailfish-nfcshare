@@ -335,6 +335,8 @@ public:
     Private(const void*, uint, NdefApp*);
     ~Private();
 
+    bool isTooMuchData() const;
+
 public Q_SLOTS:
     int GetInterfaceVersion();
     void Start(QDBusObjectPath);
@@ -404,9 +406,9 @@ NdefApp::Private::Private(
     iFiles.insert(idNdef, File("NDEF", idCc, ndefFileData(aNdefData, aNdefSize)));
     iNdefFile = &iFiles[idNdef];
 
-    // Empty NDEF file meas that the message is too large. In which case
-    // we deliberately leave the object in a non-ready state.
-    if (iNdefFile->size()) {
+    // If the message is too large, we deliberately leave the object
+    // in a non-ready state.
+    if (!isTooMuchData()) {
         // Go through the asynchronous sequence:
         //
         // 1. RegisterLocalHostApp("/ndefshare")
@@ -564,6 +566,13 @@ NdefApp::Private::createMethodCall(
 {
     return QDBusMessage::createMethodCall(NFC_SERVICE_NAME,
         NFC_SERVICE_PATH, NFC_SERVICE_INTERFACE, aMethod);
+}
+
+bool
+NdefApp::Private::isTooMuchData() const
+{
+    // Empty NDEF file means that the message is too large
+    return !iNdefFile->size();
 }
 
 //static
@@ -780,6 +789,12 @@ NdefApp::NdefApp(
     QObject(aParent),
     iPrivate(new Private(aNdefData, aNdefSize, this))
 {}
+
+bool
+NdefApp::isTooMuchData() const
+{
+    return iPrivate->isTooMuchData();
+}
 
 bool
 NdefApp::isReady() const

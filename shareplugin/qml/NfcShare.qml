@@ -48,6 +48,22 @@ Item {
         indeterminate: !nfcShare.bytesTransferred
         maximumValue: nfcShare.bytesTotal
         value: nfcShare.bytesTransferred
-        opacity: (nfcShare.ready && !nfcShare.done) ? 1 : 0
+        opacity: (nfcShare.ready && !nfcShare.done && !nfcShare.tooMuchData) ? 1 : 0
+    }
+
+    Label {
+        x: Theme.horizontalPageMargin
+        width: parent.width - 2 * x
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: Theme.paddingLarge
+        }
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.Wrap
+        color: Theme.highlightColor
+        visible: nfcShare.tooMuchData
+        //: This text is shown when the amount of data to share exceeds the limit
+        //% "Too much data to share via NFC"
+        text: qsTrId("nfcshare-la-too-much-data")
     }
 }

@@ -45,6 +45,7 @@ class NdefApp :
     public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool tooMuchData READ isTooMuchData CONSTANT)
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
     Q_PROPERTY(bool done READ isDone NOTIFY doneChanged)
     Q_PROPERTY(uint bytesTransferred READ getBytesTransferred NOTIFY bytesTransferredChanged)
@@ -55,6 +56,7 @@ class NdefApp :
 public:
     NdefApp(const void*, uint, QObject*);
 
+    bool isTooMuchData() const;
     bool isReady() const;
     bool isDone() const;
     uint getBytesTotal() const;
