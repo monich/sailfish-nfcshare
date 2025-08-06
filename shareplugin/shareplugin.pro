@@ -7,17 +7,12 @@ QT -= gui
 
 include(../config.pri)
 
-HARBOUR_LIB_DIR = ../harbour-lib
-HARBOUR_LIB_INCLUDE = $${HARBOUR_LIB_DIR}/include
-HARBOUR_LIB_SRC = $${HARBOUR_LIB_DIR}/src
-
 QMAKE_CXXFLAGS += -Wno-unused-parameter -fvisibility=hidden
 QMAKE_CFLAGS += -fvisibility=hidden
 QMAKE_LFLAGS += -fvisibility=hidden
 
 INCLUDEPATH += \
-    ../shareplugin \
-    $${HARBOUR_LIB_INCLUDE}
+    ../shareplugin
 
 DEFINES += \
     NFCSHARE_UI_DIR=\\\"$$NFCSHARE_UI_DIR\\\" \
