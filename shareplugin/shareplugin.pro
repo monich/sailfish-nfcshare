@@ -26,7 +26,6 @@ SOURCES += \
     src/nfcshareplugin.cpp
 
 UI_FILES = \
-    nfcshare.svg \
     qml/$${NFCSHARE_UI_FILE}
 
 OTHER_FILES += $$UI_FILES
