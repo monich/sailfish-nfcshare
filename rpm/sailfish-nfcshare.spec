@@ -15,6 +15,8 @@ BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(libnfcdef)
 BuildRequires:  pkgconfig(nemotransferengine-qt5) >= 2
+BuildRequires:  qt5-qttools
+BuildRequires:  qt5-qttools-linguist
 
 %define nfcshare_uidir /usr/share/nemo-transferengine/plugins/nfcshare
 %define nfcshare_qmlplugindir %{_libdir}/qt5/qml/org/sailfishos/nfcshare
@@ -22,6 +24,12 @@ BuildRequires:  pkgconfig(nemotransferengine-qt5) >= 2
 
 %description
 %{summary}.
+
+%package ts-devel
+Summary: Translation source for %{name}
+
+%description ts-devel
+Translation source for %{name}
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -35,6 +43,10 @@ BuildRequires:  pkgconfig(nemotransferengine-qt5) >= 2
 
 %files
 %license LICENSE
+%{_datadir}/translations/nfcshare_eng_en.qm
 %{transferengine_plugindir}/sharing/libnfcshareplugin.so
 %{nfcshare_qmlplugindir}
 %{nfcshare_uidir}
+
+%files ts-devel
+%{_datadir}/translations/source/*.ts
