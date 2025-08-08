@@ -53,7 +53,12 @@
 // org.sailfishos.nfc.Daemon version 4 (or later) is required
 #define NFCD_MIN_INTERFACE_VERSION 4
 #define NFCSHARE_PLUGIN_ID "NfcShare"
+
+#ifdef USE_SVG
+#define NFCSHARE_ICON NFCSHARE_UI_DIR "/icon-m-share-nfc.svg"
+#else
 #define NFCSHARE_ICON "image://theme/icon-m-share-nfc"
+#endif
 
 class Q_DECL_EXPORT NfcSharePlugin :
     public QObject,

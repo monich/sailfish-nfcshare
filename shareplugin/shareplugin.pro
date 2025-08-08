@@ -22,6 +22,10 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG
 }
 
+CONFIG(use_svg) {
+    DEFINES += USE_SVG
+}
+
 SOURCES += \
     src/nfcshareplugin.cpp
 

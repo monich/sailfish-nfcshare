@@ -23,6 +23,12 @@ BuildRequires:  sailfish-svg2png
 %define nfcshare_qmlplugindir %{_libdir}/qt5/qml/org/sailfishos/nfcshare
 %define transferengine_plugindir %{_libdir}/nemo-transferengine/plugins
 
+%if %{defined sailfishos_version} && 0%{?sailfishos_version} < 50000
+%define use_svg 1
+%else
+%define use_svg 0
+%endif
+
 %description
 %{summary}.
 
@@ -36,7 +42,11 @@ Translation source for %{name}
 %setup -q -n %{name}-%{version}
 
 %build
-%qmake5
+%qmake5 \
+%if %{?use_svg}
+  CONFIG+=use_svg
+%endif
+
 %make_build
 
 %install
@@ -48,7 +58,9 @@ Translation source for %{name}
 %{transferengine_plugindir}/sharing/libnfcshareplugin.so
 %{nfcshare_qmlplugindir}
 %{nfcshare_uidir}
+%if %{?use_svg} == 0
 %{_datadir}/themes/sailfish-default/silica/*/icons/*.png
+%endif
 
 %files ts-devel
 %{_datadir}/translations/source/*.ts
