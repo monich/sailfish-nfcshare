@@ -26,13 +26,8 @@ Item {
         }
 
         Image {
-            readonly property int _size: Theme.itemSizeHuge
-
             anchors.centerIn: parent
-            source: "image://theme/icon-m-nfc"
-            sourceSize: Qt.size(_size, _size)
-            width: _size
-            height: _size
+            source: "image://theme/icon-l-nfc"
         }
     }
 

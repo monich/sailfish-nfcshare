@@ -1,2 +1,7 @@
+*.so
+*.o
+Makefile
+moc_*
+*.moc
 build
 sailfish-nfcshare.pro.user*
